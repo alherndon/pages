@@ -1224,38 +1224,7 @@
             cachedResults = { stageName, valueAtRiskPercentage, scoreGov, scoreCulture, scoreConditions, scoreCapabilities, scoreProcess };
         }
 
-        function buildReportText(notes) {
-            const r = cachedResults;
-            const lines = [
-                "================================================================",
-                "STRATEGIC READINESS AUDIT — ABP & Advixisa",
-                "Generated: " + new Date().toLocaleDateString(),
-                "================================================================",
-                "",
-                "EXECUTIVE SUMMARY",
-                "  Maturity Stage  : " + r.stageName,
-                "  Value Secured   : " + (100 - r.valueAtRiskPercentage) + "%",
-                "  Deployment Risk : " + r.valueAtRiskPercentage + "% at risk",
-                "",
-                "PILLAR DIAGNOSTICS",
-                "  Governance & Trust     : " + r.scoreGov + "/15",
-                "  Culture (Change)       : " + r.scoreCulture + "/15",
-                "  Conditions (Rules)     : " + r.scoreConditions + "/15",
-                "  Capabilities (Skill)   : " + r.scoreCapabilities + "/15",
-                "  Process Frameworks     : " + r.scoreProcess + "/15",
-                "",
-                "ADVISORY FIELD NOTES",
-                "  " + (notes || "None provided."),
-                "",
-                "STRATEGIC MANDATE",
-                "  As your organization moves toward AI autonomy, are you building",
-                "  a governance model for a tool you control or an agent you trust?",
-                "",
-                "================================================================"
-            ];
-            return lines.join("\n");
-        }
-
+        // SUBMIT EMAIL VIA FORMSPREE
         async function submitEmailReport(btn) {
             const email = document.getElementById('lead-email').value.trim();
             if (!email || !email.match(/^[^@]+@[^@]+\.[^@]+$/)) {
@@ -1277,7 +1246,7 @@
             try {
                 const fd = new FormData();
                 fd.append('email', email);
-                fd.append('_subject', 'Your ABP & Advixisa Digital Readiness Report');
+                fd.append('_subject', 'ABP & Advixisa Digital Readiness Report');
                 fd.append('_replyto', email);
                 fd.append('Maturity_Stage', r.stageName);
                 fd.append('Value_Secured', (100 - r.valueAtRiskPercentage) + '%');
@@ -1287,8 +1256,7 @@
                 fd.append('Conditions_Score', r.scoreConditions + '/15');
                 fd.append('Capabilities_Score', r.scoreCapabilities + '/15');
                 fd.append('Process_Score', r.scoreProcess + '/15');
-                fd.append('Field_Notes', notes || 'None provided.');
-                fd.append('Full_Report', buildReportText(notes));
+                fd.append('Notes', notes || 'None provided.');
 
                 console.log('[ABP] Posting to Formspree for:', email);
                 const resp = await fetch('https://formspree.io/f/mqeobvry', {
@@ -1297,20 +1265,20 @@
                     body: fd
                 });
                 const data = await resp.json().catch(function() { return {}; });
-                console.log('[ABP] Response:', resp.status, JSON.stringify(data));
+                console.log('[ABP] Response status:', resp.status, 'body:', JSON.stringify(data));
 
                 if (resp.ok && !data.errors) {
                     btn.innerHTML = '&#10003;&nbsp;Report Sent!';
                     btn.style.background = '#059669';
                     btn.style.color = '#fff';
                     btn.style.cursor = 'default';
-                    triggerToast('Report sent — check your inbox!');
+                    triggerToast('Submitted! Check your Formspree dashboard.');
                 } else {
-                    var msg = data.errors ? data.errors.map(function(e){return e.message;}).join(', ') : 'Status ' + resp.status;
-                    console.error('[ABP] Error:', msg);
+                    var msg = (data.errors || []).map(function(e){ return e.message; }).join(', ') || ('HTTP ' + resp.status);
+                    console.error('[ABP] Formspree error:', msg);
                     btn.innerHTML = originalHTML;
                     btn.disabled = false;
-                    triggerToast('Failed: ' + msg);
+                    triggerToast('Send failed: ' + msg);
                 }
             } catch(e) {
                 console.error('[ABP] Network error:', e);
@@ -1320,6 +1288,7 @@
             }
         }
 
+        // VIEW ONLINE REPORT MODAL
         function viewOnlineReport() {
             const r = cachedResults;
             if (!r.stageName) { triggerToast('Complete the assessment first.'); return; }
@@ -1333,23 +1302,23 @@
                 ['Capabilities (Resource Skill)', r.scoreCapabilities],
                 ['Process Frameworks', r.scoreProcess]
             ];
-            var html = '<div style="border:1px solid #1e293b;border-radius:12px;padding:16px;background:#020617;margin-bottom:0">'
-                + '<p style="font-size:10px;color:#c5a059;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin:0 0 8px">Generated ' + new Date().toLocaleDateString() + '</p>'
+            var body = '<div style="border:1px solid #1e293b;border-radius:12px;padding:16px;background:#020617">'
+                + '<p style="font-size:10px;color:#c5a059;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin:0 0 8px">Generated ' + new Date().toLocaleDateString() + '</p>'
                 + '<p style="margin:4px 0;font-size:12px;color:#cbd5e1"><strong style="color:#fff">Maturity Stage:</strong> ' + r.stageName + '</p>'
                 + '<p style="margin:4px 0;font-size:12px;color:#cbd5e1"><strong style="color:#fff">Value Secured:</strong> <span style="color:#10b981;font-weight:700">' + secured + '%</span></p>'
                 + '<p style="margin:4px 0;font-size:12px;color:#cbd5e1"><strong style="color:#fff">Deployment Risk:</strong> <span style="color:' + riskColor + ';font-weight:700">' + r.valueAtRiskPercentage + '% At Risk</span></p>'
                 + '</div>';
-            html += '<div><p style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.1em;margin:0 0 12px">Pillar Diagnostics</p>';
+            body += '<div><p style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.1em;margin:0 0 12px">Pillar Diagnostics</p>';
             pillars.forEach(function(p) {
-                html += '<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:#94a3b8">' + p[0] + '</span><strong style="color:#fff">' + p[1] + '/15</strong></div>'
+                body += '<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:#94a3b8">' + p[0] + '</span><strong style="color:#fff">' + p[1] + '/15</strong></div>'
                     + '<div style="background:#1e293b;height:6px;border-radius:9999px;overflow:hidden"><div style="background:#c5a059;height:100%;width:' + Math.round((p[1]/15)*100) + '%"></div></div></div>';
             });
-            html += '</div>';
+            body += '</div>';
             if (notes) {
-                html += '<div style="border:1px solid #1e293b;border-radius:12px;padding:16px;background:#020617"><p style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.1em;margin:0 0 8px">Advisory Field Notes</p><p style="font-size:12px;color:#cbd5e1;font-style:italic;line-height:1.6;margin:0">' + notes + '</p></div>';
+                body += '<div style="border:1px solid #1e293b;border-radius:12px;padding:16px;background:#020617"><p style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.1em;margin:0 0 8px">Field Notes</p><p style="font-size:12px;color:#cbd5e1;font-style:italic;line-height:1.6;margin:0">' + notes + '</p></div>';
             }
-            html += '<div style="border:1px solid rgba(197,160,89,0.25);border-radius:12px;padding:16px;background:rgba(197,160,89,0.05)"><p style="font-size:10px;font-weight:700;color:#c5a059;text-transform:uppercase;letter-spacing:0.1em;margin:0 0 8px">Strategic Mandate</p><p style="font-size:12px;color:#e2e8f0;font-style:italic;line-height:1.6;margin:0">As your organization moves toward AI autonomy, are you building a governance model for a tool you control, or for an agent you can trust?</p></div>';
-            document.getElementById('online-report-body').innerHTML = html;
+            body += '<div style="border:1px solid rgba(197,160,89,.25);border-radius:12px;padding:16px;background:rgba(197,160,89,.05)"><p style="font-size:10px;font-weight:700;color:#c5a059;text-transform:uppercase;letter-spacing:.1em;margin:0 0 8px">Strategic Mandate</p><p style="font-size:12px;color:#e2e8f0;font-style:italic;line-height:1.6;margin:0">As your organization moves toward AI autonomy, are you building a governance model for a tool you control, or for an agent you can trust?</p></div>';
+            document.getElementById('online-report-body').innerHTML = body;
             document.getElementById('online-report-modal').classList.remove('hidden');
         }
     </script>
