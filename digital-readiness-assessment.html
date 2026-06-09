@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Readiness Assessment | Agile Business Performance</title>
+<style>
+/* ── Tokens ──────────────────────────────────────────────── */
+:root {
+  --navy:      #0D2240;
+  --navy2:     #15325A;
+  --blue:      #1A4A8A;
+  --blue-lt:   #2A6AC8;
+  --blue-pale: #EBF1FB;
+  --gray-dk:   #1F2937;
+  --gray-md:   #6B7280;
+  --gray-lt:   #E5E7EB;
+  --gray-bg:   #F3F5F9;
+  --gold:      #C9A84C;
+  --gold-lt:   #FDE68A;
+  --gold-pale: #FEF9ED;
+  --white:     #FFFFFF;
+  --green:     #15803D;
+  --red:       #DC2626;
+  --r:         10px;
+  --sh:        0 2px 16px rgba(13,34,64,.09);
+  --sh-lg:     0 6px 36px rgba(13,34,64,.14);
+}
+
+/* ── Reset ───────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--gray-bg);
+  color: var(--gray-dk);
+  line-height: 1.65;
+  min-height: 100vh;
+}
+a { color: inherit; }
+button { font-family: inherit; }
+input  { font-family: inherit; }
+
+/* ── Utility ─────────────────────────────────────────────── */
+.hidden { display: none !important; }
+.text-center { text-align: center; }
+
+/* ── Layout ──────────────────────────────────────────────── */
+.wrap { max-width: 780px; margin: 0 auto; padding: 0 1.25rem; }
+
+/* ── Animations ──────────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fadeUp .32s ease forwards; }
+
+/* ── HEADER ──────────────────────────────────────────────── */
+.site-header {
+  background: linear-gradient(140deg, var(--navy) 0%, var(--navy2) 55%, var(--blue) 100%);
+  padding: 2.8rem 1.25rem 4.2rem;
+  position: relative;
+  overflow: hidden;
+}
+.site-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 80% 0%, rgba(201,168,76,.12) 0%, transparent 60%);
+}
+.site-header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 0; right: 0;
+  height: 48px;
+  background: var(--gray-bg);
+  clip-path: ellipse(52% 100% at 50% 100%);
+}
+.header-inner { position: relative; z-index: 1; max-width: 780px; margin: 0 auto; }
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  padding: .3rem .9rem;
+  border-radius: 50px;
+  border: 1px solid rgba(201,168,76,.45);
+  background: rgba(201,168,76,.1);
+  color: var(--gold-lt);
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+.eyebrow::before { content: '●'; font-size: .45rem; }
+
+.site-header h1 {
+  color: #fff;
+  font-size: clamp(1.55rem, 4vw, 2.5rem);
+  font-weight: 800;
+  line-height: 1.18;
+  margin-bottom: .75rem;
+}
+.site-header .sub {
+  color: rgba(255,255,255,.72);
+  font-size: .97rem;
+  max-width: 520px;
+  margin-bottom: 2rem;
+}
+.header-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .7rem;
+}
+.pill {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  background: rgba(255,255,255,.09);
+  border: 1px solid rgba(255,255,255,.18);
+  color: rgba(255,255,255,.85);
+  font-size: .78rem;
+  font-weight: 600;
+  padding: .35rem .85rem;
+  border-radius: 50px;
+}
+.pill-num { color: var(--gold); font-size: .95rem; font-weight: 800; }
+
+/* ── CARD ────────────────────────────────────────────────── */
+.card {
+  background: var(--white);
+  border-radius: var(--r);
+  box-shadow: var(--sh);
+  overflow: hidden;
+  margin-bottom: 1.1rem;
+}
+.card-head {
+  padding: 1.4rem 1.6rem .9rem;
+  border-bottom: 1px solid var(--gray-lt);
+}
+.card-body { padding: 1.4rem 1.6rem; }
+
+/* ── CHIP ────────────────────────────────────────────────── */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  background: var(--blue-pale);
+  color: var(--blue);
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  padding: .28rem .75rem;
+  border-radius: 50px;
+  border: 1px solid rgba(26,74,138,.18);
+  margin-bottom: .6rem;
+}
+.chip-gold {
+  background: var(--gold-pale);
+  color: #92700f;
+  border-color: rgba(201,168,76,.25);
+}
+
+/* ── BUTTON ──────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .45rem;
+  padding: .72rem 1.55rem;
+  border-radius: 8px;
+  font-size: .93rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all .17s ease;
+  line-height: 1;
+}
+.btn:disabled { opacity: .38; pointer-events: none; }
+
+.btn-primary   { background: var(--blue);  color: #fff; }
+.btn-primary:hover  { background: var(--navy2); box-shadow: 0 4px 16px rgba(26,74,138,.32); transform: translateY(-1px); }
+
+.btn-ghost  { background: transparent; color: var(--blue); border: 1.5px solid var(--blue); }
+.btn-ghost:hover  { background: var(--blue-pale); }
+
+.btn-gold  { background: var(--gold); color: var(--navy); }
+.btn-gold:hover  { background: #b8963e; box-shadow: 0 4px 16px rgba(201,168,76,.38); transform: translateY(-1px); }
+
+.btn-lg { padding: .9rem 2.2rem; font-size: 1rem; border-radius: 10px; }
+
+/* ── PROGRESS ────────────────────────────────────────────── */
+.progress-bar-wrap {
+  background: var(--white);
+  padding: 1rem 1.6rem .85rem;
+  border-radius: var(--r) var(--r) 0 0;
+  box-shadow: var(--sh);
+  border-bottom: 1px solid var(--gray-lt);
+  margin-bottom: 0;
+}
+.progress-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: .5rem;
+}
+.progress-section { font-size: .8rem; font-weight: 700; color: var(--blue); }
+.progress-count   { font-size: .78rem; color: var(--gray-md); }
+.progress-track {
+  height: 5px;
+  background: var(--gray-lt);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--blue) 0%, var(--gold) 100%);
+  transition: width .4s ease;
+}
+
+/* ── SECTION BANNER ──────────────────────────────────────── */
+.section-banner {
+  background: linear-gradient(130deg, var(--navy) 0%, var(--blue) 100%);
+  border-radius: 0;
+  padding: 1.6rem 1.6rem 1.4rem;
+  margin-bottom: 0;
+  box-shadow: var(--sh-lg);
+}
+.section-banner h2   { color: #fff; font-size: 1.15rem; margin-bottom: .35rem; }
+.section-banner p    { color: rgba(255,255,255,.72); font-size: .87rem; }
+.section-banner-icon { font-size: 1.9rem; margin-bottom: .55rem; }
+
+/* ── QUESTION ────────────────────────────────────────────── */
+.q-label {
+  font-size: .7rem;
+  font-weight: 700;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  margin-bottom: .45rem;
+}
+.q-text {
+  font-size: 1.02rem;
+  font-weight: 600;
+  color: var(--navy);
+  line-height: 1.45;
+  margin-bottom: 1.2rem;
+}
+
+/* ── OPTIONS ─────────────────────────────────────────────── */
+.options { display: flex; flex-direction: column; gap: .5rem; }
+.opt {
+  display: flex;
+  align-items: flex-start;
+  gap: .85rem;
+  padding: .75rem 1rem;
+  border: 1.5px solid var(--gray-lt);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+  user-select: none;
+}
+.opt:hover { border-color: var(--blue-lt); background: var(--blue-pale); }
+.opt.sel   { border-color: var(--blue); background: var(--blue-pale); }
+
+.opt-dot {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--gray-lt);
+  flex-shrink: 0;
+  margin-top: .18rem;
+  position: relative;
+  transition: border-color .15s, background .15s;
+}
+.opt.sel .opt-dot { border-color: var(--blue); background: var(--blue); }
+.opt.sel .opt-dot::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  background: #fff;
+  border-radius: 50%;
+}
+.opt-text { font-size: .91rem; color: var(--gray-dk); line-height: 1.45; }
+
+/* ── NAV ROW ─────────────────────────────────────────────── */
+.nav-row {
+  background: var(--white);
+  padding: 1rem 1.6rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--gray-lt);
+  border-radius: 0 0 var(--r) var(--r);
+  box-shadow: var(--sh);
+  margin-bottom: 2rem;
+}
+
+/* ── INTRO ───────────────────────────────────────────────── */
+.intro-card {
+  background: var(--white);
+  border-radius: var(--r);
+  box-shadow: var(--sh-lg);
+  padding: 2.6rem 2rem 2.2rem;
+  text-align: center;
+  margin: 2rem 0 1.4rem;
+}
+.intro-card h1 { font-size: clamp(1.35rem, 3.5vw, 1.95rem); color: var(--navy); margin-bottom: .6rem; }
+.intro-card .lead { max-width: 530px; margin: 0 auto .6rem; color: var(--gray-md); font-size: .95rem; }
+
+.stat-row {
+  display: flex;
+  justify-content: center;
+  gap: 2.5rem;
+  flex-wrap: wrap;
+  margin: 1.5rem 0;
+}
+.stat-item { text-align: center; }
+.stat-n    { font-size: 1.6rem; font-weight: 800; color: var(--blue); display: block; }
+.stat-l    { font-size: .73rem; color: var(--gray-md); text-transform: uppercase; letter-spacing: .05em; }
+
+.pillars {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+  gap: .7rem;
+  margin: 1.4rem 0 1.8rem;
+  text-align: left;
+}
+.pillar {
+  background: var(--gray-bg);
+  border: 1px solid var(--gray-lt);
+  border-radius: 8px;
+  padding: .9rem 1rem;
+}
+.pillar-icon { font-size: 1.35rem; margin-bottom: .35rem; }
+.pillar h4   { font-size: .85rem; color: var(--navy); margin-bottom: .2rem; }
+.pillar p    { font-size: .78rem; color: var(--gray-md); }
+
+.blockquote {
+  background: rgba(13,34,64,.03);
+  border-left: 3px solid var(--gold);
+  border-radius: 0 8px 8px 0;
+  padding: .9rem 1.1rem;
+  text-align: left;
+  font-style: italic;
+  font-size: .88rem;
+  color: var(--gray-dk);
+  margin: 1.2rem 0;
+}
+.blockquote cite { display: block; margin-top: .35rem; font-size: .75rem; font-style: normal; font-weight: 600; color: var(--gray-md); }
+
+/* ── EMAIL GATE ──────────────────────────────────────────── */
+.gate-card {
+  background: var(--white);
+  border: 2px solid var(--gold);
+  border-radius: var(--r);
+  padding: 2.4rem 2rem;
+  text-align: center;
+  box-shadow: var(--sh-lg);
+  margin: 2rem 0 1.5rem;
+}
+.gate-card h2 { color: var(--navy); margin-bottom: .5rem; font-size: 1.5rem; }
+.gate-card p  { color: var(--gray-md); font-size: .92rem; max-width: 440px; margin: 0 auto 1.5rem; }
+
+.email-row {
+  display: flex;
+  gap: .65rem;
+  max-width: 440px;
+  margin: 0 auto;
+}
+.email-input {
+  flex: 1;
+  padding: .72rem 1rem;
+  border: 1.5px solid var(--gray-lt);
+  border-radius: 8px;
+  font-size: .92rem;
+  color: var(--gray-dk);
+  outline: none;
+  transition: border-color .15s;
+  min-width: 0;
+}
+.email-input:focus { border-color: var(--blue); }
+.email-input.err   { border-color: var(--red); }
+.gate-note { font-size: .74rem; color: var(--gray-md); margin-top: .65rem; }
+.err-msg   { color: var(--red); font-size: .78rem; margin-top: .45rem; }
+
+/* ── RESULTS HERO ────────────────────────────────────────── */
+#page-results { display: none; }
+
+.results-hero {
+  background: linear-gradient(140deg, var(--navy) 0%, var(--navy2) 55%, var(--blue) 100%);
+  padding: 3rem 1.25rem 4.5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.results-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 20% 100%, rgba(201,168,76,.1) 0%, transparent 55%);
+}
+.results-hero::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 0; right: 0;
+  height: 48px;
+  background: var(--gray-bg);
+  clip-path: ellipse(52% 100% at 50% 100%);
+}
+.results-hero-inner { position: relative; z-index: 1; max-width: 780px; margin: 0 auto; }
+.results-hero h1 { color: #fff; font-size: clamp(1.4rem, 3.5vw, 2.2rem); margin-bottom: .4rem; }
+.results-email { color: rgba(255,255,255,.55); font-size: .82rem; margin-top: .2rem; }
+
+/* Score ring */
+.ring-wrap { display: flex; justify-content: center; margin: 2rem 0 1.5rem; }
+.ring      { position: relative; width: 148px; height: 148px; }
+.ring svg  { transform: rotate(-90deg); }
+.ring-label {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+.ring-num   { font-size: 2.4rem; font-weight: 800; color: #fff; line-height: 1; }
+.ring-denom { font-size: .72rem; color: rgba(255,255,255,.5); margin-top: .2rem; }
+
+.maturity-badge {
+  display: inline-block;
+  background: var(--gold);
+  color: var(--navy);
+  font-weight: 800;
+  font-size: .88rem;
+  padding: .42rem 1.3rem;
+  border-radius: 50px;
+  letter-spacing: .03em;
+  margin-bottom: .6rem;
+}
+.maturity-desc { color: rgba(255,255,255,.72); font-size: .9rem; max-width: 500px; margin: 0 auto .5rem; }
+
+/* Stage track */
+.stage-track {
+  display: flex;
+  gap: .4rem;
+  max-width: 560px;
+  margin: 1.4rem auto 0;
+}
+.stage-node {
+  flex: 1;
+  padding: .5rem .3rem;
+  border-radius: 6px;
+  background: rgba(255,255,255,.1);
+  font-size: .65rem;
+  font-weight: 700;
+  color: rgba(255,255,255,.45);
+  text-align: center;
+  transition: all .3s;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.stage-node.done   { background: rgba(201,168,76,.25); color: rgba(255,255,255,.7); }
+.stage-node.active { background: var(--gold); color: var(--navy); }
+
+/* ── DIMENSION BARS ──────────────────────────────────────── */
+.dim-list { display: flex; flex-direction: column; gap: .95rem; }
+.dim-meta { display: flex; justify-content: space-between; margin-bottom: .35rem; }
+.dim-name { font-size: .86rem; font-weight: 600; color: var(--navy); }
+.dim-pct  { font-size: .84rem; color: var(--gray-md); font-weight: 600; }
+.dim-track { height: 10px; background: var(--gray-lt); border-radius: 5px; overflow: hidden; }
+.dim-fill  { height: 100%; border-radius: 5px; transition: width 1.1s ease .35s; }
+
+/* ── ACTION ITEM ─────────────────────────────────────────── */
+.action-item {
+  display: flex;
+  align-items: flex-start;
+  gap: .9rem;
+  background: var(--gray-bg);
+  border-left: 3px solid var(--blue);
+  border-radius: 0 8px 8px 0;
+  padding: .95rem 1.1rem;
+  margin-bottom: .7rem;
+}
+.action-badge {
+  width: 28px; height: 28px; flex-shrink: 0;
+  background: var(--blue); color: #fff;
+  border-radius: 50%;
+  font-size: .78rem; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+}
+.action-dim  { font-size: .72rem; font-weight: 700; color: var(--blue); text-transform: uppercase; letter-spacing: .04em; margin-bottom: .28rem; }
+.action-text { font-size: .91rem; color: var(--gray-dk); line-height: 1.45; }
+
+/* ── 70% SPLIT ───────────────────────────────────────────── */
+.split {
+  display: flex;
+  gap: .9rem;
+  flex-wrap: wrap;
+  margin-top: .8rem;
+}
+.split-item {
+  flex: 1;
+  min-width: 160px;
+  background: var(--gray-bg);
+  border: 1.5px solid var(--gray-lt);
+  border-radius: 8px;
+  padding: 1.1rem;
+  text-align: center;
+}
+.split-item.highlight { background: var(--blue-pale); border-color: var(--blue); }
+.split-num   { font-size: 2rem; font-weight: 800; display: block; }
+.split-label { font-size: .82rem; font-weight: 700; margin: .25rem 0 .2rem; }
+.split-sub   { font-size: .76rem; color: var(--gray-md); }
+
+/* ── CTA BANNER ──────────────────────────────────────────── */
+.cta-banner {
+  background: linear-gradient(130deg, var(--navy) 0%, var(--blue) 100%);
+  border-radius: var(--r);
+  padding: 2.6rem 2rem;
+  text-align: center;
+  box-shadow: var(--sh-lg);
+  margin-bottom: 1.1rem;
+}
+.cta-banner h2 { color: #fff; margin-bottom: .55rem; }
+.cta-banner p  { color: rgba(255,255,255,.72); font-size: .92rem; max-width: 440px; margin: 0 auto 1.5rem; }
+
+/* ── FOOTER ──────────────────────────────────────────────── */
+footer {
+  text-align: center;
+  padding: 1.8rem 1.25rem;
+  font-size: .76rem;
+  color: var(--gray-md);
+  background: var(--white);
+  border-top: 1px solid var(--gray-lt);
+}
+footer strong { color: var(--navy); }
+
+@media (max-width: 520px) {
+  .email-row { flex-direction: column; }
+  .stat-row  { gap: 1.5rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!--  ASSESSMENT PAGE                                          -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div id="page-assessment">
+
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="eyebrow">Agile Business Performance</div>
+      <h1>Digital Readiness Assessment</h1>
+      <p class="sub">Uncover the human foundation behind your digital strategy — and quantify the 70% that determines real ROI.</p>
+      <div class="header-pills">
+        <div class="pill"><span class="pill-num">25</span> Questions</div>
+        <div class="pill"><span class="pill-num">5</span> Dimensions</div>
+        <div class="pill"><span class="pill-num">~8 min</span> To Complete</div>
+        <div class="pill"><span class="pill-num">Free</span> Instant Results</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+
+    <!-- ── INTRO VIEW ───────────────────────────────────── -->
+    <div id="v-intro">
+      <div class="intro-card fade-up">
+        <div style="font-size:2.8rem;margin-bottom:.6rem;">🎯</div>
+        <h1>Is Your Organization Ready to Transform?</h1>
+        <p class="lead">Over 50% of digital transformations fail — not because of the technology, but because of the human foundation beneath it. This assessment tells you exactly where you stand.</p>
+
+        <div class="stat-row">
+          <div class="stat-item"><span class="stat-n">70%</span><span class="stat-l">of AI value is human-driven</span></div>
+          <div class="stat-item"><span class="stat-n">50%+</span><span class="stat-l">of ERP projects fail</span></div>
+          <div class="stat-item"><span class="stat-n">5</span><span class="stat-l">Maturity stages measured</span></div>
+        </div>
+
+        <div class="pillars">
+          <div class="pillar"><div class="pillar-icon">🏛️</div><h4>Governance</h4><p>Oversight for AI tools &amp; autonomous agents</p></div>
+          <div class="pillar"><div class="pillar-icon">🌱</div><h4>Culture</h4><p>Psychological safety &amp; appetite for change</p></div>
+          <div class="pillar"><div class="pillar-icon">⚙️</div><h4>Process</h4><p>Workflow quality before &amp; after digitization</p></div>
+          <div class="pillar"><div class="pillar-icon">🧠</div><h4>Capabilities</h4><p>Digital literacy &amp; change capacity</p></div>
+          <div class="pillar"><div class="pillar-icon">🗺️</div><h4>Strategy</h4><p>Leadership mandate &amp; investment alignment</p></div>
+        </div>
+
+        <div class="blockquote">
+          "Has your organisation addressed the governance, workflow, and change management conditions that determine 70% of AI value — or focused only on the model?"
+          <cite>— BCG, Reinvention of the CHRO in an AI-Driven Enterprise</cite>
+        </div>
+
+        <button class="btn btn-primary btn-lg" onclick="App.start()">Begin Assessment →</button>
+        <p style="margin-top:.65rem;font-size:.76rem;color:var(--gray-md);">No account needed. Results delivered instantly.</p>
+      </div>
+    </div>
+
+    <!-- ── QUESTIONS VIEW ────────────────────────────────── -->
+    <div id="v-questions" class="hidden">
+      <div style="margin-top:1.5rem;">
+        <div class="progress-bar-wrap" style="border-radius:var(--r) var(--r) 0 0;margin-bottom:0;">
+          <div class="progress-meta">
+            <span class="progress-section" id="pg-section">Governance</span>
+            <span class="progress-count" id="pg-count">1 / 25</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="pg-fill" style="width:4%"></div>
+          </div>
+        </div>
+
+        <div id="section-banner-wrap"><!-- injected per section --></div>
+
+        <div class="card" style="border-radius:0;margin-bottom:0;">
+          <div class="card-body" id="q-body"><!-- injected --></div>
+        </div>
+
+        <div class="nav-row">
+          <button class="btn btn-ghost" id="btn-prev" onclick="App.prev()" disabled>← Back</button>
+          <button class="btn btn-primary" id="btn-next" onclick="App.next()" disabled>Next →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── EMAIL GATE VIEW ───────────────────────────────── -->
+    <div id="v-email" class="hidden">
+      <div class="gate-card fade-up">
+        <div style="font-size:2.4rem;margin-bottom:.75rem;">📬</div>
+        <h2>Your Results Are Ready</h2>
+        <p>Enter your email to view your personalized Digital Readiness Report — including your maturity score, dimension breakdown, and top 3 priority actions.</p>
+        <div class="email-row">
+          <input type="email" id="email-input" class="email-input" placeholder="you@company.com" />
+          <button class="btn btn-gold" onclick="App.submitEmail()">View Results →</button>
+        </div>
+        <p class="err-msg hidden" id="email-err">Please enter a valid email address.</p>
+        <p class="gate-note">We respect your privacy. No spam, ever.</p>
+      </div>
+    </div>
+
+  </div><!-- /wrap -->
+</div><!-- /page-assessment -->
+
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!--  RESULTS PAGE                                             -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div id="page-results">
+
+  <div class="results-hero">
+    <div class="results-hero-inner">
+      <div class="eyebrow" style="border-color:rgba(201,168,76,.5);color:var(--gold-lt);">Your Digital Readiness Report</div>
+      <h1>Here's Where You Stand</h1>
+      <p class="results-email" id="r-email"></p>
+
+      <div class="ring-wrap">
+        <div class="ring">
+          <svg width="148" height="148" viewBox="0 0 148 148">
+            <circle cx="74" cy="74" r="60" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="13"/>
+            <circle cx="74" cy="74" r="60" fill="none"
+                    stroke="url(#rg)"
+                    stroke-width="13"
+                    stroke-linecap="round"
+                    stroke-dasharray="377"
+                    stroke-dashoffset="377"
+                    id="ring-arc"/>
+            <defs>
+              <linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%"   stop-color="#1A4A8A"/>
+                <stop offset="100%" stop-color="#C9A84C"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="ring-label">
+            <span class="ring-num" id="r-score">--</span>
+            <span class="ring-denom">/ 100</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="maturity-badge" id="r-badge">--</div>
+      <p class="maturity-desc" id="r-desc"></p>
+
+      <div class="stage-track">
+        <div class="stage-node" id="sn-1">Initial</div>
+        <div class="stage-node" id="sn-2">Developing</div>
+        <div class="stage-node" id="sn-3">Established</div>
+        <div class="stage-node" id="sn-4">Advanced</div>
+        <div class="stage-node" id="sn-5">Optimized</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap" style="padding-top:2rem;padding-bottom:3rem;">
+
+    <!-- Dimension scores -->
+    <div class="card fade-up">
+      <div class="card-head">
+        <div class="chip">📊 Dimension Breakdown</div>
+        <h2 style="color:var(--navy);font-size:1.2rem;">How You Score Across All Five Areas</h2>
+      </div>
+      <div class="card-body">
+        <div class="dim-list" id="r-dims"><!-- injected --></div>
+      </div>
+    </div>
+
+    <!-- Strategic insight -->
+    <div class="card fade-up">
+      <div class="card-head">
+        <div class="chip">💡 Strategic Insight</div>
+        <h2 style="color:var(--navy);font-size:1.2rem;">What Your Score Tells You</h2>
+      </div>
+      <div class="card-body">
+        <p id="r-insight" style="font-size:.93rem;color:var(--gray-dk);line-height:1.65;"></p>
+        <div class="blockquote" style="margin-top:1.2rem;">
+          "Understanding readiness for change and how your culture impacts change will influence successful technology adoption and sustainability."
+          <cite>— GSA Center of Excellence, IT Modernization Program</cite>
+        </div>
+      </div>
+    </div>
+
+    <!-- Priority actions -->
+    <div class="card fade-up">
+      <div class="card-head">
+        <div class="chip">🚀 Priority Actions</div>
+        <h2 style="color:var(--navy);font-size:1.2rem;">Your Top 3 Areas to Address First</h2>
+      </div>
+      <div class="card-body" id="r-actions"><!-- injected --></div>
+    </div>
+
+    <!-- 70% frame -->
+    <div class="card fade-up">
+      <div class="card-head">
+        <div class="chip chip-gold">📌 The Framework</div>
+        <h2 style="color:var(--navy);font-size:1.2rem;">The Invisible 70%</h2>
+      </div>
+      <div class="card-body">
+        <p style="font-size:.93rem;">Most organizations over-index on the <strong>technical model</strong> — selecting the most powerful AI or the most robust ERP platform — while treating human readiness as secondary. BCG's research makes clear: <strong>the technical model is a minority contributor to actual business value.</strong></p>
+        <div class="split" style="margin-top:1rem;">
+          <div class="split-item">
+            <span class="split-num" style="color:var(--gold);">30%</span>
+            <div class="split-label">Technical Model</div>
+            <div class="split-sub">Platform, vendor, architecture</div>
+          </div>
+          <div class="split-item highlight">
+            <span class="split-num" style="color:var(--blue);">70%</span>
+            <div class="split-label">Human Foundation</div>
+            <div class="split-sub">Governance, culture, process, capabilities</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-banner fade-up">
+      <h2>Ready to Build Your Transformation Roadmap?</h2>
+      <p>Agile Business Performance partners with organizations at every maturity stage — designing governance frameworks, change programs, and capability-building initiatives that turn digital investment into measurable performance.</p>
+      <a href="mailto:info@agilebizperformance.com" style="text-decoration:none;">
+        <button class="btn btn-gold btn-lg">Book a Readiness Review →</button>
+      </a>
+    </div>
+
+    <div class="text-center" style="margin-top:.5rem;margin-bottom:1rem;">
+      <button class="btn btn-ghost" onclick="App.retake()" style="font-size:.82rem;">↩ Retake Assessment</button>
+    </div>
+
+  </div><!-- /wrap -->
+</div><!-- /page-results -->
+
+<footer>
+  <strong>Agile Business Performance</strong> &nbsp;·&nbsp; Digital Readiness Assessment &nbsp;·&nbsp; © 2026
+</footer>
+
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!--  JAVASCRIPT                                               -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<script>
+/* ─── DATA ──────────────────────────────────────────────────── */
+const SECTIONS = [
+  { id:'governance', label:'Governance',               icon:'🏛️', title:'Governance & Oversight',      desc:'Evaluate your organization\'s accountability, policy, and oversight frameworks for digital and AI initiatives.' },
+  { id:'culture',    label:'Culture & Psychological Safety', icon:'🌱', title:'Culture & Change Readiness', desc:'Assess the values, openness, and psychological safety that determine how your organization reacts to transformation.' },
+  { id:'process',    label:'Process Maturity',          icon:'⚙️', title:'Process Maturity',             desc:'Review workflow quality, data infrastructure, and operational consistency before and during digitization.' },
+  { id:'capability', label:'Capabilities & Talent',     icon:'🧠', title:'Capabilities & Talent',        desc:'Measure digital literacy, change management capacity, and knowledge management across your organization.' },
+  { id:'strategy',   label:'Strategic Alignment',       icon:'🗺️', title:'Strategic Alignment',          desc:'Determine whether leadership mandate and investment priorities are aligned to support real transformation.' },
+];
+
+const DIM_COLORS = ['#1A4A8A','#15803D','#C9A84C','#9333EA','#DC2626'];
+
+const Q = [
+  // GOVERNANCE (0) — 5 questions
+  { s:0, t:'How clearly defined are roles and responsibilities for overseeing AI tools and digital systems?',
+    o:['No defined roles exist','Roles are informally understood but not documented','Roles are documented but inconsistently followed','Roles are clearly defined and actively enforced','Governance roles are embedded in org-wide policy with regular review'] },
+  { s:0, t:'To what extent do you have policies governing the use of autonomous or semi-autonomous AI agents?',
+    o:['No policies exist','Policies are in draft or discussion stage','Policies exist for supervised tools only','Policies cover autonomous agents with defined escalation paths','Comprehensive agent governance with audit trails and trust metrics'] },
+  { s:0, t:'How does your organization handle data governance across departments?',
+    o:['Data is siloed with no cross-department standards','Some shared definitions but inconsistency remains','Core data domains have standards; gaps still exist','Enterprise-wide governance with data stewards in place','Real-time governance with automated data quality enforcement'] },
+  { s:0, t:'When a digital initiative fails or deviates from expected outcomes, how does your organization respond?',
+    o:['No formal process — issues surface ad hoc','Post-mortems happen but findings are rarely acted on','Structured reviews occur with some follow-through','Consistent review cycles feed back into governance updates','Failures automatically trigger governance revision workflows'] },
+  { s:0, t:'How transparent is leadership in communicating digital strategy and governance decisions to employees?',
+    o:['Communication is infrequent or filtered through management layers','Updates are shared but without full context or rationale','Regular updates with some two-way feedback channels','Open communication culture with accessible leadership','Radical transparency is a stated value with practices to match'] },
+
+  // CULTURE (1) — 5 questions
+  { s:1, t:'How would you describe your organization\'s overall appetite for change?',
+    o:['"This is how we\'ve always done it" — strong resistance','Change happens slowly and reluctantly','Change is accepted with sufficient justification','Employees often advocate for new approaches','Change agility is part of the organizational DNA'] },
+  { s:1, t:'How safe do employees feel raising concerns about a new technology or AI system?',
+    o:['Not safe — concerns are seen as obstruction','Somewhat safe with trusted colleagues, but not formally','A formal channel exists but is rarely used','Employees regularly raise concerns and see them addressed','Psychological safety is actively measured and managed'] },
+  { s:1, t:'How does your organization respond when readiness data conflicts with project timelines?',
+    o:['The timeline always wins — data is minimized','Timeline usually wins; data informs last-minute adjustments only','Both are weighed in a formal discussion','Data typically informs timeline decisions','Brutal honesty is the norm — launch dates flex to match readiness'] },
+  { s:1, t:'How well does your culture support cross-functional collaboration during digital projects?',
+    o:['Silos are deeply entrenched','Collaboration happens but requires significant friction','Cross-functional teams form project by project','Standing cross-functional pods exist for digital initiatives','Cross-functional work is the default operating model'] },
+  { s:1, t:'How does leadership model the digital behaviors they expect from employees?',
+    o:['Leadership rarely uses the tools it mandates','Patchy — some leaders lead by example, others do not','Leadership uses tools but rarely in visible, public ways','Leaders visibly and regularly demonstrate digital practices','Leaders are co-creators of digital culture through active participation'] },
+
+  // PROCESS (2) — 5 questions
+  { s:2, t:'Before digitizing a workflow, how thoroughly does your organization validate the underlying manual process?',
+    o:['Digital tools are deployed on top of undocumented workflows','Minimal documentation — "good enough" standard','Processes are documented but rarely validated before go-live','Process mapping is a standard pre-requisite for every digitization','Business process reengineering precedes every digitization initiative'] },
+  { s:2, t:'How mature is your data infrastructure for supporting analytics and AI-driven decisions?',
+    o:['Data is fragmented across unconnected systems','Some data is centralized, but major gaps remain','Core operational data is unified; analytics data is inconsistent','Integrated data platform supports reporting and descriptive analytics','Predictive and prescriptive analytics drive operational decisions'] },
+  { s:2, t:'How consistently are standard operating procedures followed during times of technology transition?',
+    o:['SOPs are routinely bypassed under pressure','SOPs exist but adherence is inconsistent','SOPs are followed for high-risk processes; others vary','SOPs are followed consistently with documented exceptions','SOPs are living documents updated in real time during transitions'] },
+  { s:2, t:'How well integrated are your core enterprise systems (ERP, CRM, HRIS)?',
+    o:['Systems operate independently with manual data transfer','Point-to-point integrations exist but are fragile','Core systems are integrated; some legacy gaps remain','Enterprise-wide integration with a central data model','Event-driven architecture enables real-time interoperability'] },
+  { s:2, t:'What intensive support structures does your organization provide during major technology go-lives?',
+    o:['No formal hypercare — teams are expected to self-support','Informal support available but not systematically deployed','A hypercare window is defined but under-resourced','Structured hypercare teams are deployed for all major go-lives','Hypercare is a formal methodology with tiered escalation and success metrics'] },
+
+  // CAPABILITY (3) — 5 questions
+  { s:3, t:'How would you rate the average digital literacy of your workforce?',
+    o:['Basic — most employees struggle with core digital tools','Developing — employees manage standard tools; advanced use is rare','Functional — the majority use digital tools effectively','Proficient — employees regularly leverage advanced features','Advanced — digital fluency is an explicit competency standard'] },
+  { s:3, t:'How well-resourced is your organization\'s change management function?',
+    o:['No dedicated change management capability exists','Change management is an ad hoc role assigned to project managers','A small team exists but is reactive and under-staffed','A dedicated team with defined methodology and toolkits','Change management is a strategic core competency with executive sponsorship'] },
+  { s:3, t:'How prepared are managers to lead their teams through digital transformation?',
+    o:['Most managers have received no digital leadership training','Some managers attended introductory sessions','Managers have role-specific digital training available','Managers are certified in digital leadership practices','Managers are evaluated on digital leadership as a core KPI'] },
+  { s:3, t:'How effectively does your organization capture and transfer institutional knowledge during digital projects?',
+    o:['Knowledge lives in individuals — little is formally captured','Documentation exists but is inconsistently maintained','Knowledge capture is a project deliverable but quality varies','Structured knowledge management practices exist org-wide','A living knowledge base is continuously curated and refreshed'] },
+  { s:3, t:'How capable is your organization of running and interpreting readiness assessments and gap analyses?',
+    o:['These tools are not used or understood','Awareness exists but application is irregular','Teams use these tools on major projects with external support','Internal capability to run assessments independently and consistently','Assessment results feed directly into planning and governance cycles'] },
+
+  // STRATEGY (4) — 5 questions
+  { s:4, t:'How clearly articulated is your digital transformation vision and implementation roadmap?',
+    o:['No formal vision or roadmap exists','A vision exists but lacks a concrete roadmap','A roadmap exists but is known only to senior leadership','The roadmap is communicated and referenced across the organization','The vision and roadmap are co-created with employees and regularly refreshed'] },
+  { s:4, t:'How aligned is your leadership team on prioritizing digital readiness vs. technical capability investment?',
+    o:['Leadership views readiness as secondary to technology selection','Some leaders prioritize readiness; others do not','General agreement on importance, but budget reflects tech bias','Readiness investment is explicitly protected in the digital budget','Executive KPIs weight readiness alongside technical milestones'] },
+  { s:4, t:'How well does your digital strategy account for the shift from supervised AI tools to autonomous AI agents?',
+    o:['The distinction is not on leadership\'s radar','The concept is known but not formally addressed in strategy','Strategy mentions AI autonomy but governance lags behind','Governance frameworks for agents are being actively developed','A trust-based governance model for autonomous agents is fully operational'] },
+  { s:4, t:'How rigorously does your organization measure and report on digital transformation ROI?',
+    o:['ROI is not formally tracked','Lagging indicators are tracked post-launch only','KPIs are defined upfront but measurement is inconsistent','A balanced scorecard tracks both leading and lagging indicators','Real-time dashboards track ROI against readiness benchmarks continuously'] },
+  { s:4, t:'How committed is your C-suite to moving from "tech buyer" to "culture architect"?',
+    o:['C-suite views digital transformation as primarily a technology purchase','Some executives embrace a culture-first framing','Culture is acknowledged as important but investment is uneven','Culture architecture is a stated C-suite priority with funded programs','The CEO actively champions and models culture-first digital leadership'] },
+];
+
+/* ─── MATURITY CONFIG ────────────────────────────────────────── */
+const MATURITY = [
+  { min:0,  max:24,  stage:1, label:'Initial',     desc:'Digital tools are isolated, creating silos and reactive processes. Foundational governance and cultural groundwork must precede further technology investment.' },
+  { min:25, max:44,  stage:2, label:'Developing',  desc:'Early pilots show promise but execution is inconsistent. Formalize change management and establish honest readiness assessment practices.' },
+  { min:45, max:64,  stage:3, label:'Established', desc:'Core systems are integrated and digital literacy is growing. Shift focus to predictive capabilities and embed change management as a core organizational function.' },
+  { min:65, max:81,  stage:4, label:'Advanced',    desc:'Data-driven decisions and change management are active capabilities. Work now to distribute these strengths enterprise-wide and build your autonomous AI governance model.' },
+  { min:82, max:100, stage:5, label:'Optimized',   desc:'Change agility is organizational DNA. Your challenge is sustaining this standard while extending governance to the emerging frontier of autonomous AI agents.' },
+];
+
+const INSIGHTS = [
+  'Your organization is at the very beginning of its digital readiness journey. The highest-return immediate action is establishing basic governance structures and conducting an honest cultural baseline assessment before making further technology investments. Technology deployed into an unprepared environment accelerates existing dysfunction rather than resolving it.',
+  'You have early momentum but significant structural gaps remain. Prioritize formalizing change management as a dedicated function, standardizing your pre-launch readiness assessment process, and creating safe channels for employees to raise concerns without fear of being dismissed. The 50% failure rate in digital transformations is largely attributable to skipping these foundations.',
+  'Your organization has a solid operational foundation. The strategic priority now is closing the gap between process consistency and predictive capability — and ensuring your governance framework is designed for AI autonomy, not just the supervised tools you\'re managing today.',
+  'You are operating at a high level of digital maturity. Your challenge is organizational scaling — ensuring advanced capabilities are not concentrated in isolated pockets but distributed across the enterprise. Begin building your autonomous AI governance model proactively before agents are deployed at scale.',
+  'You represent the leading edge of digital maturity. Your work now is to sustain agility as the technology landscape evolves and to ensure your governance model anticipates agentic AI — because a framework designed for a tool you control is fundamentally different from one built for an agent you must trust.',
+];
+
+const ACTIONS = [
+  ['Define AI governance roles and document policy for supervised tools', 'Establish a cross-functional governance council with representation from IT, HR, Legal, and Operations', 'Build an agent trust framework before deploying any autonomous AI capabilities'],
+  ['Conduct a psychological safety baseline survey before the next go-live', 'Implement a structured "brutal honesty" readiness review at every launch gate', 'Train managers to visibly model digital-first behaviors in daily operations'],
+  ['Map all critical workflows manually before digitizing any process', 'Conduct a business process reengineering review on your 3 highest-risk workflows', 'Build a hypercare playbook and resource it adequately for every major go-live'],
+  ['Assess digital literacy across all employee tiers and create role-specific development plans', 'Hire or develop a dedicated internal change management function with executive sponsorship', 'Build a structured knowledge capture protocol into every digital project lifecycle'],
+  ['Align the executive team on a "culture architect" mandate before the next technology purchase', 'Create a digital roadmap visible and accessible to all employees — not just senior leadership', 'Protect readiness investment as an explicit budget line in digital transformation spend'],
+];
+
+/* ─── APP STATE ─────────────────────────────────────────────── */
+const App = (() => {
+  let cur      = 0;
+  let answers  = new Array(Q.length).fill(null);
+  let email    = '';
+  let lastSec  = -1;
+
+  /* ── helpers ── */
+  function show(id)  { document.getElementById(id).classList.remove('hidden'); }
+  function hide(id)  { document.getElementById(id).classList.add('hidden'); }
+  function qs(sel)   { return document.querySelector(sel); }
+
+  function sectionScores() {
+    const t=[0,0,0,0,0], c=[0,0,0,0,0];
+    Q.forEach((q,i)=>{ if(answers[i]!==null){ t[q.s]+=(answers[i]+1); c[q.s]++; } });
+    return t.map((v,i)=> c[i] ? Math.round((v/(c[i]*5))*100) : 0);
+  }
+
+  function overallScore() {
+    const s = sectionScores();
+    return Math.round(s.reduce((a,b)=>a+b,0)/5);
+  }
+
+  function getMaturity(score) {
+    return MATURITY.find(m=> score >= m.min && score <= m.max) || MATURITY[0];
+  }
+
+  /* ── render question ── */
+  function render() {
+    const q   = Q[cur];
+    const sec = SECTIONS[q.s];
+    const pct = Math.round(((cur+1)/Q.length)*100);
+
+    document.getElementById('pg-section').textContent = sec.label;
+    document.getElementById('pg-count').textContent   = `${cur+1} / ${Q.length}`;
+    document.getElementById('pg-fill').style.width    = `${pct}%`;
+
+    // Section banner — show on first question of each section
+    const bannerWrap = document.getElementById('section-banner-wrap');
+    if (q.s !== lastSec) {
+      lastSec = q.s;
+      bannerWrap.innerHTML = `
+        <div class="section-banner fade-up">
+          <div class="section-banner-icon">${sec.icon}</div>
+          <h2>${sec.title}</h2>
+          <p>${sec.desc}</p>
+        </div>`;
+    } else {
+      bannerWrap.innerHTML = '';
+    }
+
+    // Question + options
+    document.getElementById('q-body').innerHTML = `
+      <div class="q-label">${sec.label} · Q${cur+1}</div>
+      <div class="q-text">${q.t}</div>
+      <div class="options">
+        ${q.o.map((o,i)=>`
+          <div class="opt${answers[cur]===i?' sel':''}" onclick="App.pick(${i})">
+            <div class="opt-dot"></div>
+            <span class="opt-text">${o}</span>
+          </div>`).join('')}
+      </div>`;
+
+    document.getElementById('btn-prev').disabled = cur === 0;
+    document.getElementById('btn-next').disabled = answers[cur] === null;
+    document.getElementById('btn-next').textContent = cur === Q.length-1 ? 'Finish →' : 'Next →';
+  }
+
+  /* ── public ── */
+  return {
+    start() {
+      hide('v-intro');
+      show('v-questions');
+      render();
+    },
+
+    pick(idx) {
+      answers[cur] = idx;
+      document.querySelectorAll('.opt').forEach((el,i)=> el.classList.toggle('sel', i===idx));
+      document.getElementById('btn-next').disabled = false;
+    },
+
+    next() {
+      if (answers[cur] === null) return;
+      if (cur < Q.length-1) { cur++; render(); window.scrollTo({top:0,behavior:'smooth'}); }
+      else {
+        hide('v-questions');
+        show('v-email');
+        window.scrollTo({top:0,behavior:'smooth'});
+      }
+    },
+
+    prev() {
+      if (cur > 0) { cur--; render(); window.scrollTo({top:0,behavior:'smooth'}); }
+    },
+
+    submitEmail() {
+      const inp = document.getElementById('email-input');
+      const err = document.getElementById('email-err');
+      const val = inp.value.trim();
+      if (!val || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+        err.classList.remove('hidden');
+        inp.classList.add('err');
+        return;
+      }
+      err.classList.add('hidden');
+      inp.classList.remove('err');
+      email = val;
+      this.showResults();
+    },
+
+    showResults() {
+      document.getElementById('page-assessment').style.display = 'none';
+      document.getElementById('page-results').style.display    = 'block';
+      window.scrollTo({top:0,behavior:'smooth'});
+
+      const score  = overallScore();
+      const scores = sectionScores();
+      const mat    = getMaturity(score);
+
+      // Email
+      document.getElementById('r-email').textContent = email ? `Results for ${email}` : '';
+
+      // Score
+      document.getElementById('r-score').textContent = score;
+
+      // Ring animation
+      setTimeout(()=>{
+        const circ = 2*Math.PI*60;          // r=60
+        const arc  = circ*(score/100);
+        const el   = document.getElementById('ring-arc');
+        el.style.strokeDashoffset = circ - arc;
+        el.style.transition = 'stroke-dashoffset 1.4s ease .25s';
+      }, 80);
+
+      // Badge + desc
+      document.getElementById('r-badge').textContent = `Stage ${mat.stage}: ${mat.label}`;
+      document.getElementById('r-desc').textContent  = mat.desc;
+
+      // Stage nodes
+      for (let i=1;i<=5;i++) {
+        const n = document.getElementById(`sn-${i}`);
+        n.className = 'stage-node';
+        if (i <  mat.stage) n.classList.add('done');
+        if (i === mat.stage) n.classList.add('active');
+      }
+
+      // Dimension bars
+      const dimNames = SECTIONS.map(s=>s.label.split('&')[0].trim());
+      document.getElementById('r-dims').innerHTML = scores.map((s,i)=>`
+        <div>
+          <div class="dim-meta">
+            <span class="dim-name">${dimNames[i]}</span>
+            <span class="dim-pct">${s}%</span>
+          </div>
+          <div class="dim-track">
+            <div class="dim-fill" style="width:0%;background:${DIM_COLORS[i]};" data-w="${s}"></div>
+          </div>
+        </div>`).join('');
+
+      setTimeout(()=>{
+        document.querySelectorAll('.dim-fill').forEach(el=>{
+          el.style.width = el.dataset.w + '%';
+        });
+      }, 120);
+
+      // Insight
+      document.getElementById('r-insight').textContent = INSIGHTS[mat.stage-1];
+
+      // Actions — bottom 3 dimensions
+      const ranked = scores.map((s,i)=>({s,i})).sort((a,b)=>a.s-b.s);
+      document.getElementById('r-actions').innerHTML = ranked.slice(0,3).map((d,rank)=>`
+        <div class="action-item">
+          <div class="action-badge">${rank+1}</div>
+          <div>
+            <div class="action-dim">${dimNames[d.i]} — ${d.s}%</div>
+            <div class="action-text">${ACTIONS[d.i][Math.min(rank,2)]}</div>
+          </div>
+        </div>`).join('');
+    },
+
+    retake() {
+      cur     = 0;
+      answers = new Array(Q.length).fill(null);
+      email   = '';
+      lastSec = -1;
+      document.getElementById('page-results').style.display    = 'none';
+      document.getElementById('page-assessment').style.display = 'block';
+      hide('v-questions'); hide('v-email');
+      show('v-intro');
+      document.getElementById('email-input').value = '';
+      window.scrollTo({top:0,behavior:'smooth'});
+    },
+  };
+})();
+</script>
+</body>
+</html>
