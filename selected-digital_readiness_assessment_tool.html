@@ -319,7 +319,7 @@
                     <button onclick="window.scrollTo({top: document.getElementById('assessment-card').offsetTop - 100, behavior: 'smooth'})" class="text-xs font-semibold tracking-wider uppercase text-slate-300 hover:text-white bg-slate-900 border border-slate-800 px-4 py-2.5 rounded-lg transition-all">
                         Reset Audit
                     </button>
-                    <button onclick="exportSummary()" class="bg-brand-500 hover:bg-brand-600 text-white text-xs font-semibold uppercase tracking-wider px-4 py-2.5 rounded-lg shadow-lg shadow-brand-500/10 transition-all inline-flex items-center">
+                    <button onclick="document.getElementById('lead-email').scrollIntoView({behavior:'smooth',block:'center'}); document.getElementById('lead-email').focus();" class="bg-brand-500 hover:bg-brand-600 text-white text-xs font-semibold uppercase tracking-wider px-4 py-2.5 rounded-lg shadow-lg shadow-brand-500/10 transition-all inline-flex items-center">
                         <svg class="w-4 h-4 mr-2 text-accent-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m-4 0h4m-6 9a1 1 0 011-1h2a1 1 0 011 1v3a1 1 0 01-1 1H9a1 1 0 01-1-1v-3zm5-1a1 1 0 011-1h2a1 1 0 011 1v3a1 1 0 01-1 1h-2a1 1 0 01-1-1v-3z" />
                         </svg>
@@ -584,9 +584,26 @@
                                 <p><strong class="text-slate-400 font-normal italic">Advisory advisory remarks will be automatically appended to the final exported briefing file.</strong></p>
                             </div>
                         </div>
-                        <button onclick="copyBriefing()" class="w-full mt-4 bg-accent-gold hover:bg-yellow-600 text-slate-950 font-bold text-xs py-3.5 rounded-lg flex items-center justify-center transition-all uppercase tracking-wider">
-                            Copy Strategic Briefing to Clipboard
-                        </button>
+                        <!-- LEAD MAGNET: EMAIL CAPTURE -->
+                        <div class="w-full mt-4 space-y-3">
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Your Work Email</label>
+                                <input type="email" id="lead-email" placeholder="you@company.com" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-accent-gold focus:border-transparent transition-all" />
+                            </div>
+                            <button id="email-report-btn" onclick="submitEmailReport(this)" class="w-full bg-accent-gold hover:bg-yellow-500 text-slate-950 font-bold text-xs py-3 rounded-lg flex items-center justify-center gap-2 transition-all uppercase tracking-wider">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                </svg>
+                                Download &amp; Email My Report
+                            </button>
+                            <button onclick="viewOnlineReport()" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-semibold text-xs py-3 rounded-lg flex items-center justify-center gap-2 transition-all uppercase tracking-wider">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                                View Full Report Online
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -650,7 +667,47 @@
         </div>
     </div>
 
-    <!-- DYNAMIC TOAST SYSTEM -->
+
+    <!-- ONLINE REPORT MODAL -->
+    <div id="online-report-modal" class="hidden fixed inset-0 bg-slate-950/95 backdrop-blur-sm z-50 flex items-start justify-center p-4 overflow-y-auto">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-2xl w-full my-8 relative">
+            <!-- Header -->
+            <div class="flex items-center justify-between border-b border-slate-800 px-6 py-4">
+                <div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <div class="w-6 h-6 bg-brand-500 rounded flex items-center justify-center">
+                            <svg class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            </svg>
+                        </div>
+                        <span class="text-[10px] font-bold text-accent-gold uppercase tracking-widest">ABP &amp; Advixisa</span>
+                    </div>
+                    <h3 class="font-display text-lg font-bold text-white uppercase tracking-wide">Strategic Readiness Report</h3>
+                </div>
+                <button onclick="document.getElementById('online-report-modal').classList.add('hidden')" class="text-slate-400 hover:text-white transition-colors ml-4">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Report Body -->
+            <div class="p-6 space-y-6 text-xs" id="online-report-body">
+                <!-- Populated by JS -->
+            </div>
+
+            <!-- Footer -->
+            <div class="border-t border-slate-800 px-6 py-4 flex items-center justify-between">
+                <p class="text-[10px] text-slate-500">© 2026 Agile Business Performance &amp; Advixisa</p>
+                <button onclick="document.getElementById('online-report-modal').classList.add('hidden')" class="bg-brand-500 hover:bg-brand-600 text-white font-semibold text-xs px-5 py-2.5 rounded-lg transition-colors uppercase tracking-wider">
+                    Close Report
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+        <!-- DYNAMIC TOAST SYSTEM -->
     <div id="toast-message" class="fixed bottom-6 right-6 bg-slate-900 border border-accent-gold text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none z-50">
         <svg class="w-4 h-4 text-accent-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -983,6 +1040,7 @@
 
             // Initialize/Update Charts
             initRadarChart(scoreGov, scoreCulture, scoreConditions, scoreCapabilities, scoreProcess);
+            cacheResults(stageName, valueAtRiskPercentage, scoreGov, scoreCulture, scoreConditions, scoreCapabilities, scoreProcess);
             updatePreviewSummaries(stageName, valueAtRiskPercentage);
         }
 
@@ -1185,47 +1243,159 @@
             }, 3000);
         }
 
-        // COPY DETAILED EXPORT BRIEFS (Educational & Advisory terminology matching ABP & Advixisa guidelines)
-        function copyBriefing() {
-            const userNotes = document.getElementById('workspace-notes').value || "No strategic field comments added.";
-            
-            const rawText = `
-========================================================================
-STRATEGIC REPORT: TRANSFORMATION READINESS AUDIT
-Joint Assessment: Agile Business Performance & Advixisa
-========================================================================
-Generated on: ${new Date().toLocaleDateString()}
+        // GLOBAL RESULTS STATE (populated when assessment completes)
+        let cachedResults = {};
 
-1. EXECUTIVE MATURITY ANALYSIS:
-- Organizational Maturity Stage: ${document.getElementById('maturity-level-name').innerText}
-- "Invisible 70%" Value Secured: ${document.getElementById('preview-roi').innerText}
-- Deployment Vulnerability Risk Index: ${document.getElementById('risk-percentage').innerText} At Risk
+        // STORE RESULTS FOR LATER USE IN EMAIL/VIEW
+        function cacheResults(stageName, valueAtRiskPercentage, scoreGov, scoreCulture, scoreConditions, scoreCapabilities, scoreProcess) {
+            cachedResults = { stageName, valueAtRiskPercentage, scoreGov, scoreCulture, scoreConditions, scoreCapabilities, scoreProcess };
+        }
 
-2. PILLAR DIAGNOSTICS:
-- Governance & Trust Score: ${document.getElementById('stat-gov').innerText}
-- GSA C3 Profile Distribution:
-  * Culture Appetite Score: ${document.getElementById('bar-val-culture').innerText}
-  * Conditions Score: ${document.getElementById('bar-val-conditions').innerText}
-  * Capabilities Score: ${document.getElementById('bar-val-capabilities').innerText}
-- Process Framework Position: ${document.getElementById('stat-process').innerText}
+        // BUILD PLAIN-TEXT REPORT STRING
+        function buildReportText(notes) {
+            const r = cachedResults;
+            return [
+                "========================================================================",
+                "STRATEGIC READINESS AUDIT REPORT",
+                "Joint Assessment: Agile Business Performance & Advixisa",
+                "The Invisible 70% — Digital Readiness Assessment",
+                "========================================================================",
+                "Generated: " + new Date().toLocaleDateString(),
+                "",
+                "1. EXECUTIVE SUMMARY",
+                "   Organizational Maturity Stage : " + r.stageName,
+                "   Invisible 70% Value Secured   : " + (100 - r.valueAtRiskPercentage) + "%",
+                "   Deployment Risk Index         : " + r.valueAtRiskPercentage + "% At Risk",
+                "",
+                "2. PILLAR DIAGNOSTICS",
+                "   Governance & Trust            : " + r.scoreGov + "/15",
+                "   Culture (Change Appetite)     : " + r.scoreCulture + "/15",
+                "   Conditions (Rules & Assets)   : " + r.scoreConditions + "/15",
+                "   Capabilities (Resource Skill) : " + r.scoreCapabilities + "/15",
+                "   Process Frameworks            : " + r.scoreProcess + "/15",
+                "",
+                "3. INTERNAL ADVISORY FIELD NOTES",
+                "   " + (notes || "No notes added."),
+                "",
+                "4. STRATEGIC MANDATE",
+                "   \"As your organization moves toward AI autonomy, are you building a",
+                "    governance model for a tool you control, or for an agent you can trust?\"",
+                "",
+                "========================================================================"
+            ].join("\n");
+        }
 
-3. INTERNAL ADVISORY FIELD NOTES:
-"${userNotes}"
+        // SUBMIT EMAIL VIA FORMSPREE
+        async function submitEmailReport(btn) {
+            const email = document.getElementById('lead-email').value.trim();
+            if (!email || !email.match(/^[^@]+@[^@]+\.[^@]+$/)) {
+                triggerToast('Please enter a valid email address.');
+                document.getElementById('lead-email').focus();
+                return;
+            }
 
-4. CORE TRANSFORMATION MANDATE:
-"As your organization moves toward AI autonomy, are you building a governance model for a tool you control, or for an agent you can trust?"
+            const notes = document.getElementById('workspace-notes').value || '';
+            const r = cachedResults;
 
-========================================================================
+            if (!r.stageName) {
+                triggerToast('Complete the assessment first.');
+                return;
+            }
+
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>&nbsp;Sending...';
+            btn.disabled = true;
+
+            try {
+                const resp = await fetch('https://formspree.io/f/mqeobvry', {
+                    method: 'POST',
+                    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: email,
+                        _subject: 'Your ABP & Advixisa Strategic Readiness Report',
+                        maturity_stage: r.stageName,
+                        value_secured: (100 - r.valueAtRiskPercentage) + '%',
+                        risk_index: r.valueAtRiskPercentage + '%',
+                        governance_score: r.scoreGov + '/15',
+                        culture_score: r.scoreCulture + '/15',
+                        conditions_score: r.scoreConditions + '/15',
+                        capabilities_score: r.scoreCapabilities + '/15',
+                        process_score: r.scoreProcess + '/15',
+                        field_notes: notes || 'None provided.',
+                        full_report: buildReportText(notes)
+                    })
+                });
+
+                if (resp.ok) {
+                    btn.innerHTML = '<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>&nbsp;Report Sent!';
+                    btn.classList.remove('bg-accent-gold','hover:bg-yellow-500','text-slate-950');
+                    btn.classList.add('bg-emerald-600','text-white','cursor-default');
+                    triggerToast('Report sent — check your inbox!');
+                } else {
+                    throw new Error('Formspree error');
+                }
+            } catch(e) {
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+                triggerToast('Could not send — please try again.');
+            }
+        }
+
+        // VIEW ONLINE REPORT MODAL
+        function viewOnlineReport() {
+            const r = cachedResults;
+            if (!r.stageName) {
+                triggerToast('Complete the assessment first.');
+                return;
+            }
+
+            const notes = document.getElementById('workspace-notes').value || 'None provided.';
+            const riskColor = r.valueAtRiskPercentage > 50 ? '#ef4444' : r.valueAtRiskPercentage > 25 ? '#c5a059' : '#10b981';
+            const secured = 100 - r.valueAtRiskPercentage;
+
+            document.getElementById('online-report-body').innerHTML = `
+                <div class="border border-slate-800 rounded-xl p-4 space-y-1 bg-slate-950/50">
+                    <p class="text-[10px] font-bold text-accent-gold uppercase tracking-widest">Generated ${new Date().toLocaleDateString()}</p>
+                    <p class="text-slate-300"><span class="font-bold text-white">Maturity Stage:</span> ${r.stageName}</p>
+                    <p class="text-slate-300"><span class="font-bold text-white">Value Secured:</span> <span class="text-emerald-400 font-bold">${secured}%</span></p>
+                    <p class="text-slate-300"><span class="font-bold text-white">Deployment Risk:</span> <span style="color:${riskColor}" class="font-bold">${r.valueAtRiskPercentage}% At Risk</span></p>
+                </div>
+
+                <div>
+                    <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Pillar Diagnostics</h4>
+                    <div class="space-y-2">
+                        ${[
+                            ['Governance & Trust', r.scoreGov],
+                            ['Culture (Change Appetite)', r.scoreCulture],
+                            ['Conditions (Rules & Assets)', r.scoreConditions],
+                            ['Capabilities (Resource Skill)', r.scoreCapabilities],
+                            ['Process Frameworks', r.scoreProcess]
+                        ].map(([label, score]) => `
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-slate-400">${label}</span>
+                                <span class="text-white font-bold">${score}/15</span>
+                            </div>
+                            <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                                <div class="bg-accent-gold h-full rounded-full transition-all" style="width:${(score/15)*100}%"></div>
+                            </div>
+                        </div>`).join('')}
+                    </div>
+                </div>
+
+                ${notes !== 'None provided.' ? `
+                <div class="border border-slate-800 rounded-xl p-4 bg-slate-950/50">
+                    <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Advisory Field Notes</h4>
+                    <p class="text-slate-300 italic leading-relaxed">${notes}</p>
+                </div>` : ''}
+
+                <div class="border border-accent-gold/20 rounded-xl p-4 bg-accent-gold/5">
+                    <h4 class="text-[10px] font-bold text-accent-gold uppercase tracking-widest mb-2">Strategic Mandate</h4>
+                    <p class="text-slate-200 italic leading-relaxed">"As your organization moves toward AI autonomy, are you building a governance model for a tool you control, or for an agent you can trust?"</p>
+                </div>
             `;
 
-            const tempInput = document.createElement("textarea");
-            tempInput.value = rawText;
-            document.body.appendChild(tempInput);
-            tempInput.select();
-            document.execCommand("copy");
-            document.body.removeChild(tempInput);
-
-            triggerToast("Strategic Briefing Copied!");
+            document.getElementById('online-report-modal').classList.remove('hidden');
         }
     </script>
 </body>
