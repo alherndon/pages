@@ -10,6 +10,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- EmailJS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <!-- Chart.js for beautiful interactive data charts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
@@ -591,7 +593,7 @@
                             </div>
                             <button id="email-report-btn" onclick="submitEmailReport(this)" class="w-full bg-accent-gold hover:bg-yellow-500 text-slate-950 font-bold text-xs py-3 rounded-lg flex items-center justify-center gap-2 transition-all uppercase tracking-wider">
                                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-                                Download &amp; Email My Report
+                                Email My Report
                             </button>
                             <button onclick="viewOnlineReport()" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-semibold text-xs py-3 rounded-lg flex items-center justify-center gap-2 transition-all uppercase tracking-wider">
                                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
@@ -806,6 +808,7 @@
 
         // INITIAL ONLOAD CONFIGURATION
         window.onload = function() {
+            emailjs.init('Tbv05FZiairyc58r-');
             renderQuestion();
             updateUIPillars();
         };
@@ -1224,78 +1227,130 @@
             cachedResults = { stageName, valueAtRiskPercentage, scoreGov, scoreCulture, scoreConditions, scoreCapabilities, scoreProcess };
         }
 
-        // SUBMIT EMAIL VIA FORMSPREE
+        // BUILD EMAIL-SAFE HTML REPORT
+        function buildReportHTML(r, notes) {
+            var secured = 100 - r.valueAtRiskPercentage;
+            var riskColor = r.valueAtRiskPercentage > 50 ? '#dc2626' : r.valueAtRiskPercentage > 25 ? '#b45309' : '#16a34a';
+            var date = new Date().toLocaleDateString('en-US', {year:'numeric', month:'long', day:'numeric'});
+            var pillars = [
+                ['Governance &amp; Trust', r.scoreGov],
+                ['Culture (Change Appetite)', r.scoreCulture],
+                ['Conditions (Rules &amp; Assets)', r.scoreConditions],
+                ['Capabilities (Resource Skill)', r.scoreCapabilities],
+                ['Process Frameworks', r.scoreProcess]
+            ];
+            var pillarRows = pillars.map(function(p) {
+                var pct = Math.round((p[1] / 15) * 100);
+                return '<tr><td style="padding:8px 0;border-bottom:1px solid #f1f5f9">'
+                    + '<table width="100%" cellpadding="0" cellspacing="0"><tr>'
+                    + '<td style="font-size:12px;color:#475569;width:50%;vertical-align:middle">' + p[0] + '</td>'
+                    + '<td style="font-size:13px;font-weight:700;color:#0f172a;width:12%;text-align:center;vertical-align:middle">' + p[1] + '/15</td>'
+                    + '<td style="width:38%;padding-left:12px;vertical-align:middle">'
+                    + '<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse"><tr>'
+                    + '<td style="background:#e2e8f0;border-radius:4px;height:8px;overflow:hidden;padding:0">'
+                    + '<table width="' + pct + '%" cellpadding="0" cellspacing="0" style="border-collapse:collapse"><tr>'
+                    + '<td style="background:#c5a059;height:8px;font-size:0;line-height:0">&nbsp;</td>'
+                    + '</tr></table></td></tr></table></td>'
+                    + '</tr></table></td></tr>';
+            }).join('');
+
+            return '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>'
+                + '<body style="margin:0;padding:0;background:#f1f5f9;font-family:Arial,Helvetica,sans-serif">'
+                + '<table width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;padding:32px 16px"><tr><td>'
+                + '<table width="600" cellpadding="0" cellspacing="0" align="center" style="max-width:600px;width:100%;margin:0 auto;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.1)">'
+
+                // Header
+                + '<tr><td style="background:#002244;padding:32px">'
+                + '<p style="color:#c5a059;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.15em;margin:0 0 6px">Agile Business Performance | Advixisa</p>'
+                + '<h1 style="color:#ffffff;font-size:22px;font-weight:700;margin:0 0 6px;line-height:1.3">Strategic Readiness Report</h1>'
+                + '<p style="color:#94a3b8;font-size:12px;margin:0">The Invisible 70% &bull; ' + date + '</p>'
+                + '</td></tr>'
+
+                // Summary strip
+                + '<tr><td style="background:#003366;padding:20px 32px">'
+                + '<table width="100%" cellpadding="0" cellspacing="0"><tr>'
+                + '<td style="text-align:center;padding:0 12px">'
+                + '<p style="color:#94a3b8;font-size:10px;text-transform:uppercase;letter-spacing:0.1em;margin:0 0 6px">Maturity Stage</p>'
+                + '<p style="color:#ffffff;font-size:13px;font-weight:700;margin:0;line-height:1.3">' + r.stageName + '</p></td>'
+                + '<td style="text-align:center;padding:0 12px;border-left:1px solid rgba(255,255,255,0.12)">'
+                + '<p style="color:#94a3b8;font-size:10px;text-transform:uppercase;letter-spacing:0.1em;margin:0 0 6px">Value Secured</p>'
+                + '<p style="color:#4ade80;font-size:16px;font-weight:700;margin:0">' + secured + '%</p></td>'
+                + '<td style="text-align:center;padding:0 12px;border-left:1px solid rgba(255,255,255,0.12)">'
+                + '<p style="color:#94a3b8;font-size:10px;text-transform:uppercase;letter-spacing:0.1em;margin:0 0 6px">Risk Index</p>'
+                + '<p style="color:' + riskColor + ';font-size:16px;font-weight:700;margin:0">' + r.valueAtRiskPercentage + '%</p></td>'
+                + '</tr></table></td></tr>'
+
+                // Pillar body
+                + '<tr><td style="background:#ffffff;padding:32px">'
+                + '<h2 style="color:#0f172a;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;margin:0 0 16px;padding-bottom:12px;border-bottom:2px solid #f1f5f9">Pillar Diagnostics</h2>'
+                + '<table width="100%" cellpadding="0" cellspacing="0">' + pillarRows + '</table>'
+
+                // Notes
+                + (notes ? '<div style="margin-top:24px;padding:16px;background:#f8fafc;border-left:3px solid #c5a059">'
+                    + '<p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#64748b;margin:0 0 6px">Advisory Field Notes</p>'
+                    + '<p style="font-size:13px;color:#475569;font-style:italic;line-height:1.7;margin:0">' + notes + '</p></div>' : '')
+
+                // Mandate
+                + '<div style="margin-top:24px;padding:20px;background:#fffbeb;border:1px solid rgba(197,160,89,0.4);border-radius:6px">'
+                + '<p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#c5a059;margin:0 0 8px">Strategic Mandate</p>'
+                + '<p style="font-size:13px;color:#1e293b;font-style:italic;line-height:1.8;margin:0">&ldquo;As your organization moves toward AI autonomy, are you building a governance model for a tool you control, or for an agent you can trust?&rdquo;</p>'
+                + '</div></td></tr>'
+
+                // Footer
+                + '<tr><td style="background:#0f172a;padding:20px 32px;border-radius:0 0 12px 12px">'
+                + '<p style="color:#64748b;font-size:11px;margin:0">&copy; 2026 Agile Business Performance &amp; Advixisa &bull; All rights reserved.</p>'
+                + '</td></tr>'
+
+                + '</table></td></tr></table></body></html>';
+        }
+
+        // SUBMIT VIA EMAILJS
         async function submitEmailReport(btn) {
-            const email = document.getElementById('lead-email').value.trim();
+            var email = document.getElementById('lead-email').value.trim();
             if (!email || !email.match(/^[^@]+@[^@]+\.[^@]+$/)) {
                 triggerToast('Please enter a valid email address.');
                 document.getElementById('lead-email').focus();
                 return;
             }
-            const notes = document.getElementById('workspace-notes').value || '';
-            const r = cachedResults;
+            var r = cachedResults;
             if (!r.stageName) {
                 triggerToast('Complete the assessment first.');
                 return;
             }
-
-            const originalHTML = btn.innerHTML;
+            var notes = document.getElementById('workspace-notes').value || '';
+            var originalHTML = btn.innerHTML;
             btn.innerHTML = 'Sending...';
             btn.disabled = true;
 
+            var templateParams = {
+                to_email: email,
+                report_html: buildReportHTML(r, notes)
+            };
+
             try {
-                const fd = new FormData();
-                fd.append('email', email);
-                fd.append('_subject', 'ABP & Advixisa Digital Readiness Report');
-                fd.append('_replyto', email);
-                fd.append('Maturity_Stage', r.stageName);
-                fd.append('Value_Secured', (100 - r.valueAtRiskPercentage) + '%');
-                fd.append('Risk_Index', r.valueAtRiskPercentage + '% at risk');
-                fd.append('Governance_Score', r.scoreGov + '/15');
-                fd.append('Culture_Score', r.scoreCulture + '/15');
-                fd.append('Conditions_Score', r.scoreConditions + '/15');
-                fd.append('Capabilities_Score', r.scoreCapabilities + '/15');
-                fd.append('Process_Score', r.scoreProcess + '/15');
-                fd.append('Notes', notes || 'None provided.');
-
-                console.log('[ABP] Posting to Formspree for:', email);
-                const resp = await fetch('https://formspree.io/f/mqeobvry', {
-                    method: 'POST',
-                    headers: { 'Accept': 'application/json' },
-                    body: fd
-                });
-                const data = await resp.json().catch(function() { return {}; });
-                console.log('[ABP] Response status:', resp.status, 'body:', JSON.stringify(data));
-
-                if (resp.ok && !data.errors) {
-                    btn.innerHTML = '&#10003;&nbsp;Report Sent!';
-                    btn.style.background = '#059669';
-                    btn.style.color = '#fff';
-                    btn.style.cursor = 'default';
-                    triggerToast('Submitted! Check your Formspree dashboard.');
-                } else {
-                    var msg = (data.errors || []).map(function(e){ return e.message; }).join(', ') || ('HTTP ' + resp.status);
-                    console.error('[ABP] Formspree error:', msg);
-                    btn.innerHTML = originalHTML;
-                    btn.disabled = false;
-                    triggerToast('Send failed: ' + msg);
-                }
-            } catch(e) {
-                console.error('[ABP] Network error:', e);
+                var response = await emailjs.send('service_fb3ncoo', 'template_8bntqks', templateParams);
+                console.log('[ABP] EmailJS success:', response.status, response.text);
+                btn.innerHTML = '&#10003;&nbsp;Report Sent!';
+                btn.style.background = '#059669';
+                btn.style.color = '#fff';
+                btn.style.cursor = 'default';
+                triggerToast('Report sent — check your inbox!');
+            } catch(err) {
+                console.error('[ABP] EmailJS error:', JSON.stringify(err));
                 btn.innerHTML = originalHTML;
                 btn.disabled = false;
-                triggerToast('Network error — are you online?');
+                triggerToast('Send failed: ' + (err.text || JSON.stringify(err)));
             }
         }
 
         // VIEW ONLINE REPORT MODAL
         function viewOnlineReport() {
-            const r = cachedResults;
+            var r = cachedResults;
             if (!r.stageName) { triggerToast('Complete the assessment first.'); return; }
-            const notes = document.getElementById('workspace-notes').value || '';
-            const secured = 100 - r.valueAtRiskPercentage;
-            const riskColor = r.valueAtRiskPercentage > 50 ? '#ef4444' : r.valueAtRiskPercentage > 25 ? '#c5a059' : '#10b981';
-            const pillars = [
+            var notes = document.getElementById('workspace-notes').value || '';
+            var secured = 100 - r.valueAtRiskPercentage;
+            var riskColor = r.valueAtRiskPercentage > 50 ? '#ef4444' : r.valueAtRiskPercentage > 25 ? '#c5a059' : '#10b981';
+            var pillars = [
                 ['Governance & Trust', r.scoreGov],
                 ['Culture (Change Appetite)', r.scoreCulture],
                 ['Conditions (Rules & Assets)', r.scoreConditions],
@@ -1306,18 +1361,15 @@
                 + '<p style="font-size:10px;color:#c5a059;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin:0 0 8px">Generated ' + new Date().toLocaleDateString() + '</p>'
                 + '<p style="margin:4px 0;font-size:12px;color:#cbd5e1"><strong style="color:#fff">Maturity Stage:</strong> ' + r.stageName + '</p>'
                 + '<p style="margin:4px 0;font-size:12px;color:#cbd5e1"><strong style="color:#fff">Value Secured:</strong> <span style="color:#10b981;font-weight:700">' + secured + '%</span></p>'
-                + '<p style="margin:4px 0;font-size:12px;color:#cbd5e1"><strong style="color:#fff">Deployment Risk:</strong> <span style="color:' + riskColor + ';font-weight:700">' + r.valueAtRiskPercentage + '% At Risk</span></p>'
-                + '</div>';
+                + '<p style="margin:4px 0;font-size:12px;color:#cbd5e1"><strong style="color:#fff">Deployment Risk:</strong> <span style="color:' + riskColor + ';font-weight:700">' + r.valueAtRiskPercentage + '% At Risk</span></p></div>';
             body += '<div><p style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.1em;margin:0 0 12px">Pillar Diagnostics</p>';
             pillars.forEach(function(p) {
                 body += '<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:#94a3b8">' + p[0] + '</span><strong style="color:#fff">' + p[1] + '/15</strong></div>'
                     + '<div style="background:#1e293b;height:6px;border-radius:9999px;overflow:hidden"><div style="background:#c5a059;height:100%;width:' + Math.round((p[1]/15)*100) + '%"></div></div></div>';
             });
             body += '</div>';
-            if (notes) {
-                body += '<div style="border:1px solid #1e293b;border-radius:12px;padding:16px;background:#020617"><p style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.1em;margin:0 0 8px">Field Notes</p><p style="font-size:12px;color:#cbd5e1;font-style:italic;line-height:1.6;margin:0">' + notes + '</p></div>';
-            }
-            body += '<div style="border:1px solid rgba(197,160,89,.25);border-radius:12px;padding:16px;background:rgba(197,160,89,.05)"><p style="font-size:10px;font-weight:700;color:#c5a059;text-transform:uppercase;letter-spacing:.1em;margin:0 0 8px">Strategic Mandate</p><p style="font-size:12px;color:#e2e8f0;font-style:italic;line-height:1.6;margin:0">As your organization moves toward AI autonomy, are you building a governance model for a tool you control, or for an agent you can trust?</p></div>';
+            if (notes) body += '<div style="border:1px solid #1e293b;border-radius:12px;padding:16px;background:#020617"><p style="font-size:10px;font-weight:700;color:#64748b;text-transform:uppercase;margin:0 0 8px">Field Notes</p><p style="font-size:12px;color:#cbd5e1;font-style:italic;margin:0">' + notes + '</p></div>';
+            body += '<div style="border:1px solid rgba(197,160,89,.25);border-radius:12px;padding:16px;background:rgba(197,160,89,.05)"><p style="font-size:10px;font-weight:700;color:#c5a059;text-transform:uppercase;margin:0 0 8px">Strategic Mandate</p><p style="font-size:12px;color:#e2e8f0;font-style:italic;line-height:1.6;margin:0">As your organization moves toward AI autonomy, are you building a governance model for a tool you control, or for an agent you can trust?</p></div>';
             document.getElementById('online-report-body').innerHTML = body;
             document.getElementById('online-report-modal').classList.remove('hidden');
         }
